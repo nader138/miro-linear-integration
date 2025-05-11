@@ -1,0 +1,44 @@
+{
+    "compilerOptions": {
+      // Specifies which JavaScript version to compile to
+      // ES2020 gives us modern features like optional chaining (?.)
+      "target": "ES2020",
+  
+      // Determines how modules are handled
+      // "CommonJS" is the standard for Node.js (uses require/module.exports)
+      "module": "CommonJS",
+  
+      // Tells TypeScript how to find modules
+      // "node" means it will look in node_modules and use Node.js module resolution
+      "moduleResolution": "node",
+  
+      // Enables all strict type checking options
+      // This includes: strictNullChecks, strictFunctionTypes, strictBindCallApply,
+      // strictPropertyInitialization, noImplicitAny, noImplicitThis, useUnknownInCatchVariables
+      "strict": true,
+  
+      // Allows default imports from modules with no default export
+      // For example: import React from 'react' instead of import * as React from 'react'
+      "esModuleInterop": true,
+  
+      // Skip type checking of declaration files (.d.ts files)
+      // Makes compilation faster by not checking node_modules types
+      "skipLibCheck": true,
+  
+      // Ensures consistent casing in file names
+      // Prevents issues on case-sensitive vs case-insensitive filesystems
+      "forceConsistentCasingInFileNames": true,
+  
+      // Where to put the compiled JavaScript files
+      // ./dist is a common convention for compiled output
+      "outDir": "./dist",
+  
+      // Where to find the source TypeScript files
+      // ./src is a common convention for source files
+      "rootDir": "./src"
+    },
+  
+    // Which files to include in compilation
+    // src/**/* means "include all files under the src directory"
+    "include": ["src/**/*"]
+  }

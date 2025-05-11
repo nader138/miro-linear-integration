@@ -1,8 +1,8 @@
-const dotenv = require('dotenv');
-const { z } = require('zod');
+import { config } from 'dotenv';
+import { z } from 'zod';
 
 // Load .env file
-dotenv.config();
+config();
 
 // Define a schema for our environment variables
 const envSchema = z.object({
@@ -17,10 +17,15 @@ try {
     // Don't log the actual tokens in production!
     console.log('MIRO_ACCESS_TOKEN length:', env.MIRO_ACCESS_TOKEN.length);
     console.log('LINEAR_API_KEY length:', env.LINEAR_API_KEY.length);
-} catch (error) {
+} catch (error: unknown) { // Explicitly type the error as unknown
     if (error instanceof z.ZodError) {
+        // This is a validation error from Zod
         console.error('Invalid environment variables:', error.errors);
+    } else if (error instanceof Error) {
+        // This is a standard Error object
+        console.error('An error occurred:', error.message);
     } else {
-        console.error('An error occurred:', error);
+        // This is an unknown error type
+        console.error('An unknown error occurred:', error);
     }
 }
