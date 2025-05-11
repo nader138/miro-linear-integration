@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@linear/sdk": "^39.2.1",
     "@types/node": "^22.15.17",
     "node-fetch": "^3.3.2",
     "typescript": "^5.8.3"
