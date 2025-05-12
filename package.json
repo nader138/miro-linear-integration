@@ -15,8 +15,10 @@
   "license": "ISC",
   "dependencies": {
     "@linear/sdk": "^39.2.1",
-    "dotenv": "^16.5.0",
+    "@types/express": "^5.0.1",
     "cross-fetch": "^3.1.6",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "zod": "^3.24.4"
   },
   "devDependencies": {
