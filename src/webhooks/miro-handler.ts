@@ -17,20 +17,20 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
     protected async handleEvent(payload: unknown): Promise<void> {
         try {
             // Validate and parse the webhook payload
-            const event = MiroWebhookEventSchema.parse(payload);
+            const event = MiroWebhookEventSchema.parse(payload).event;
 
-            console.log(`Processing Miro event: ${event.eventType}`, {
-                timestamp: new Date().toISOString(),
-                user: 'nader138',
-                eventId: event.event.id
+            console.log(`Processing Miro event: ${event.type}`, {
+                timestamp: event.item.createdAt,
+                user: event.item.createdBy.id,
+                eventId: event.item.id,
             });
 
-            switch (event.eventType) {
-                case 'item.create':
+            switch (event.type) {
+                case 'create':
                     await this.handleItemCreated(event);
                     break;
                 default:
-                    console.log(`Unhandled event type: ${event.eventType}`);
+                    console.log(`Unhandled event type: ${event.type}`);
             }
         } catch (error) {
             handleError(error);
@@ -38,27 +38,27 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
         }
     }
 
-    private async handleItemCreated(event: MiroWebhookEvent): Promise<void> {
-        if (event.event.type !== 'sticky_note') {
+    private async handleItemCreated(event: any): Promise<void> {
+        if (event.item.type !== 'sticky_note') {
             return;
         }
 
-        const { data } = event.event;
+        const item = event.item;
 
         try {
             await this.linearClient.createIssue({
                 teamId: this.linearTeamId,
-                title: `Miro Task: ${data.content || 'New Task'}`,
+                title: `Miro Task: ${item.content || 'New Task'}`,
                 description: [
-                    `Created from Miro sticky note: ${data.id}`,
+                    `Created from Miro sticky note: ${item.id}`,
                     `Board ID: ${event.boardId}`,
-                    `Created at: 2025-05-12 19:30:10`,
-                    `Created by: nader138`,
-                    `Content: ${data.content || 'No content'}`
+                    `Created at: ${item.createdAt}`,
+                    `Created by: ${item.createdBy.id}`,
+                    `Content: ${item.content || 'No content'}`
                 ].join('\n')
             });
 
-            console.log('Successfully created Linear issue for sticky note:', data.id);
+            console.log('Successfully created Linear issue for sticky note:', item.id);
         } catch (error) {
             handleError(error);
             throw error;
