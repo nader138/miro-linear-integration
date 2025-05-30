@@ -1,4 +1,3 @@
-
 import { LinearClient as Linear, Issue } from '@linear/sdk';
 import { LinearIssue, CreateLinearIssueParams } from '../types';
 import { LinearApiError } from '../types/errors';
@@ -65,6 +64,51 @@ export class LinearClient {
             );
             handleError(wrappedError);
             throw wrappedError;
+        }
+    }
+
+    // Find a Linear issue by sticky note ID in the description
+    async findIssueByStickyNoteId(stickyNoteId: string): Promise<LinearIssue | null> {
+        try {
+            // Search issues with the sticky note ID in the description
+            const result = await this.client.issues({
+                filter: {
+                    description: { contains: stickyNoteId }
+                }
+            });
+            const issue = result.nodes[0];
+            if (!issue) return null;
+            const issueState = await issue.state;
+            return {
+                id: issue.id,
+                title: issue.title,
+                description: issue.description ?? null,
+                status: issueState ? issueState.name : '',
+                url: issue.url
+            };
+        } catch (error) {
+            handleError(error);
+            return null;
+        }
+    }
+
+    // Update a Linear issue by ID
+    async updateIssue(issueId: string, update: { title?: string; description?: string }): Promise<void> {
+        try {
+            await this.client.updateIssue(issueId, update);
+        } catch (error) {
+            handleError(error);
+            throw error;
+        }
+    }
+
+    // Delete a Linear issue by ID
+    async deleteIssue(issueId: string): Promise<void> {
+        try {
+            await this.client.deleteIssue(issueId);
+        } catch (error) {
+            handleError(error);
+            throw error;
         }
     }
 }

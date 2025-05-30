@@ -29,6 +29,12 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
                 case 'create':
                     await this.handleItemCreated(event);
                     break;
+                case 'update':
+                    await this.handleItemUpdated(event);
+                    break;
+                case 'delete':
+                    await this.handleItemDeleted(event);
+                    break;
                 default:
                     console.log(`Unhandled event type: ${event.type}`);
             }
@@ -59,6 +65,57 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
             });
 
             console.log('Successfully created Linear issue for sticky note:', item.id);
+        } catch (error) {
+            handleError(error);
+            throw error;
+        }
+    }
+
+    private async handleItemUpdated(event: any): Promise<void> {
+        if (event.item.type !== 'sticky_note') {
+            return;
+        }
+        try {
+            // Find the Linear issue by sticky note ID in the description
+            const stickyNoteId = event.item.id;
+            const issue = await this.linearClient.findIssueByStickyNoteId(stickyNoteId);
+            if (!issue) {
+                console.log('No matching Linear issue found for sticky note:', stickyNoteId);
+                return;
+            }
+            // Update the Linear issue with new content
+            await this.linearClient.updateIssue(issue.id, {
+                title: `Miro Task: ${event.item.content || 'Updated Task'}`,
+                description: [
+                    `Created from Miro sticky note: ${event.item.id}`,
+                    `Board ID: ${event.boardId}`,
+                    `Created at: ${event.item.createdAt}`,
+                    `Created by: ${event.item.createdBy.id}`,
+                    `Content: ${event.item.content || 'No content'}`
+                ].join('\n')
+            });
+            console.log('Successfully updated Linear issue for sticky note:', stickyNoteId);
+        } catch (error) {
+            handleError(error);
+            throw error;
+        }
+    }
+
+    private async handleItemDeleted(event: any): Promise<void> {
+        if (event.item.type !== 'sticky_note') {
+            return;
+        }
+        try {
+            // Find the Linear issue by sticky note ID in the description
+            const stickyNoteId = event.item.id;
+            const issue = await this.linearClient.findIssueByStickyNoteId(stickyNoteId);
+            if (!issue) {
+                console.log('No matching Linear issue found for sticky note:', stickyNoteId);
+                return;
+            }
+            // Delete the Linear issue
+            await this.linearClient.deleteIssue(issue.id);
+            console.log('Successfully archived Linear issue for sticky note:', stickyNoteId);
         } catch (error) {
             handleError(error);
             throw error;
