@@ -114,7 +114,7 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
                 return;
             }
             await this.linearClient.deleteIssue(issue.id);
-            console.log('Successfully archived Linear issue for sticky note:', stickyNoteId);
+            console.log('Successfully deleted Linear issue for sticky note:', stickyNoteId);
         } catch (error) {
             handleError(error);
             throw error;
