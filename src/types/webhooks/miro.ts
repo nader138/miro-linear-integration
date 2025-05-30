@@ -11,36 +11,37 @@ export const MiroWebhookEventSchema = z.object({
         type: z.enum(['create', 'update', 'delete']),
         item: z.object({
             id: z.string(),
-            type: z.string(),
-            createdAt: z.string(),
+            // All other fields are optional for delete events
+            type: z.string().optional(),
+            createdAt: z.string().optional(),
             createdBy: z.object({
                 id: z.string(),
                 type: z.string()
-            }),
+            }).optional(),
             data: z.object({
                 content: z.string().optional(),
                 shape: z.string().optional()
-            }).passthrough(),
+            }).passthrough().optional(),
             geometry: z.object({
                 width: z.number(),
                 height: z.number()
-            }),
-            modifiedAt: z.string(),
+            }).optional(),
+            modifiedAt: z.string().optional(),
             modifiedBy: z.object({
                 id: z.string(),
                 type: z.string()
-            }),
+            }).optional(),
             position: z.object({
                 x: z.number(),
                 y: z.number(),
                 origin: z.string(),
                 relativeTo: z.string()
-            }),
+            }).optional(),
             style: z.object({
                 fillColor: z.string(),
                 textAlign: z.string(),
                 textAlignVertical: z.string()
-            })
+            }).optional()
         })
     }),
 });
