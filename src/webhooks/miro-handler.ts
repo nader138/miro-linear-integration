@@ -2,6 +2,7 @@ import { MiroClient } from '../clients/miro';
 import { LinearClient } from '../clients/linear';
 import { BaseWebhookHandler } from './base-handler';
 import { MiroWebhookEvent, MiroWebhookEventSchema } from '../types/webhooks/miro';
+import { z } from 'zod';
 import { handleError } from '../utils/error-handler';
 
 export class MiroWebhookHandler extends BaseWebhookHandler {
@@ -44,23 +45,24 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
         }
     }
 
-    private async handleItemCreated(event: any): Promise<void> {
+    private async handleItemCreated(event: z.infer<typeof MiroWebhookEventSchema>['event']): Promise<void> {
         if (event.item.type !== 'sticky_note') {
             return;
         }
 
         const item = event.item;
+        const content = item.data?.content || 'New Task';
 
         try {
             await this.linearClient.createIssue({
                 teamId: this.linearTeamId,
-                title: `Miro Task: ${item.content || 'New Task'}`,
+                title: `Miro Task: ${content}`,
                 description: [
                     `Created from Miro sticky note: ${item.id}`,
                     `Board ID: ${event.boardId}`,
                     `Created at: ${item.createdAt}`,
                     `Created by: ${item.createdBy.id}`,
-                    `Content: ${item.content || 'No content'}`
+                    `Content: ${content || 'No content'}`
                 ].join('\n')
             });
 
@@ -71,7 +73,7 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
         }
     }
 
-    private async handleItemUpdated(event: any): Promise<void> {
+    private async handleItemUpdated(event: z.infer<typeof MiroWebhookEventSchema>['event']): Promise<void> {
         if (event.item.type !== 'sticky_note') {
             return;
         }
@@ -83,15 +85,16 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
                 console.log('No matching Linear issue found for sticky note:', stickyNoteId);
                 return;
             }
+            const content = event.item.data?.content || 'Updated Task';
             // Update the Linear issue with new content
             await this.linearClient.updateIssue(issue.id, {
-                title: `Miro Task: ${event.item.content || 'Updated Task'}`,
+                title: `Miro Task: ${content}`,
                 description: [
                     `Created from Miro sticky note: ${event.item.id}`,
                     `Board ID: ${event.boardId}`,
                     `Created at: ${event.item.createdAt}`,
                     `Created by: ${event.item.createdBy.id}`,
-                    `Content: ${event.item.content || 'No content'}`
+                    `Content: ${content || 'No content'}`
                 ].join('\n')
             });
             console.log('Successfully updated Linear issue for sticky note:', stickyNoteId);
@@ -101,7 +104,7 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
         }
     }
 
-    private async handleItemDeleted(event: any): Promise<void> {
+    private async handleItemDeleted(event: z.infer<typeof MiroWebhookEventSchema>['event']): Promise<void> {
         if (event.item.type !== 'sticky_note') {
             return;
         }
