@@ -16,7 +16,12 @@ const envSchema = z.object({
 });
 
 const app = express();
-app.use(express.json());
+app.use(express.json({
+    verify: (req, res, buf) => {
+        (req as any).rawBody = buf.toString();
+    }
+}));
+
 
 try {
     const env = envSchema.parse(process.env);
@@ -31,7 +36,7 @@ try {
         env.LINEAR_TEAM_ID
     );
 
-    app.post('/webhook/miro', (req, res) => {
+    app.post('/', (req, res) => {
         webhookHandler.process(req, res);
     });
 
