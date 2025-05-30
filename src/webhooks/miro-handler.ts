@@ -45,13 +45,19 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
         }
     }
 
+    // Utility to strip HTML tags from a string
+    private stripHtmlTags(input: string): string {
+        return input.replace(/<[^>]*>/g, '').trim();
+    }
+
     private async handleItemCreated(event: z.infer<typeof MiroWebhookEventSchema>['event']): Promise<void> {
         if (event.item.type !== 'sticky_note') {
             return;
         }
 
         const item = event.item;
-        const content = item.data?.content || 'New Task';
+        const rawContent = item.data?.content || 'New Task';
+        const content = this.stripHtmlTags(rawContent);
 
         try {
             await this.linearClient.createIssue({
@@ -84,7 +90,8 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
                 console.log('No matching Linear issue found for sticky note:', stickyNoteId);
                 return;
             }
-            const content = event.item.data?.content || 'Updated Task';
+            const rawContent = event.item.data?.content || 'Updated Task';
+            const content = this.stripHtmlTags(rawContent);
             await this.linearClient.updateIssue(issue.id, {
                 title: `Miro Task: ${content}`,
                 description: [
