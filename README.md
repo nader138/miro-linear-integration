@@ -5,6 +5,7 @@ This app syncs Miro sticky notes with Linear issues in real time, supporting cre
 ---
 
 ## Features
+
 - **Sync Miro sticky notes to Linear issues** (create, update, delete)
 - **Webhook signature verification** for security
 - **Challenge-response** for Miro webhook verification
@@ -15,6 +16,7 @@ This app syncs Miro sticky notes with Linear issues in real time, supporting cre
 ---
 
 ## Prerequisites
+
 - Node.js v18 or newer
 - A Linear API key ([how to get one](https://developers.linear.app/docs/graphql/getting-started#api-keys))
 - A Miro account with access to the [Miro Developer Platform](https://developers.miro.com/)
@@ -85,23 +87,27 @@ Copy the HTTPS URL provided by ngrok.
 ---
 
 ## Configuration
+
 - Edit `src/config/env.ts` or use environment variables to adjust settings.
 - Team/project mapping logic can be customized in `src/webhooks/miro-handler.ts`.
 
 ---
 
 ## Deployment
+
 - Deploy to any Node.js-compatible host (Vercel, Heroku, AWS, DigitalOcean, etc.)
 - Ensure your endpoint is HTTPS-accessible for Miro webhooks.
 
 ---
 
 ## License
+
 Apache 2.0 (for self-hosted use). For SaaS/commercial use, contact the author.
 
 ---
 
 ## Troubleshooting
+
 - **Webhook not triggering?** Ensure your endpoint is public and HTTPS, and the secret matches.
 - **Signature errors?** Double-check the `MIRO_WEBHOOK_SECRET` and that your server uses the raw request body for verification.
 - **Linear errors?** Check your API key and team/project configuration.
@@ -109,15 +115,18 @@ Apache 2.0 (for self-hosted use). For SaaS/commercial use, contact the author.
 ---
 
 ## Contributing
+
 PRs are welcome for bugfixes and improvements. For major features, open an issue first.
 
 ---
 
 ## Security
+
 - Keep your API keys and secrets safe.
 - Use HTTPS in production.
 
 ---
 
 ## Contact
+
 For questions or commercial licensing, open an issue or contact the maintainer.
