@@ -62,14 +62,8 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
         try {
             await this.linearClient.createIssue({
                 teamId: this.linearTeamId,
-                title: `Miro Task: ${content}`,
-                description: [
-                    `Created from Miro sticky note: ${item.id}`,
-                    `Board ID: ${event.boardId}`,
-                    `Created at: ${item.createdAt || ''}`,
-                    `Created by: ${item.createdBy?.id || ''}`,
-                    `Content: ${content || 'No content'}`
-                ].join('\n')
+                title: content,
+                description: `Created from Miro sticky note: ${event.item.id}`,
             });
 
             console.log('Successfully created Linear issue for sticky note:', item.id);
@@ -93,14 +87,9 @@ export class MiroWebhookHandler extends BaseWebhookHandler {
             const rawContent = event.item.data?.content || 'Updated Task';
             const content = this.stripHtmlTags(rawContent);
             await this.linearClient.updateIssue(issue.id, {
-                title: `Miro Task: ${content}`,
-                description: [
-                    `Created from Miro sticky note: ${event.item.id}`,
-                    `Board ID: ${event.boardId}`,
-                    `Created at: ${event.item.createdAt || ''}`,
-                    `Created by: ${event.item.createdBy?.id || ''}`,
-                    `Content: ${content || 'No content'}`
-                ].join('\n')
+                title: content,
+                description: `Created from Miro sticky note: ${event.item.id}`,
+
             });
             console.log('Successfully updated Linear issue for sticky note:', stickyNoteId);
         } catch (error) {
